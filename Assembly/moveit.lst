@@ -1,0 +1,25 @@
+     1                                  section .data
+     2                                  
+     3 00000000 55                          value db 55h
+     4                                      
+     5                                  section .text
+     6                                      global    _start
+     7                                  
+     8                                  _start:
+     9 00000000 90                          nop
+    10                                      
+    11                                  ; Put your experiments between the two nops...
+    12                                  
+    13 00000001 B842000000                  mov eax,42h
+    14 00000006 030425[00000000]            add eax,[value]
+    15 0000000D BB42000000                      mov rbx,42h
+    16 00000012 48031C25[00000000]          add rbx,[value]
+    17 0000001A 48BB48656C6C6F0000-             mov rbx, "Hello" 
+    18 00000023 00                 
+    19 00000024 B9CDAB0000                      mov rcx, 0ABCDh
+    20                                  
+    21                                  
+    22                                  
+    23                                  ; Put your experiments between the two nops...
+    24                                  
+    25 00000029 90                          nop

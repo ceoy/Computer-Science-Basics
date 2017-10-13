@@ -1,0 +1,11 @@
+     1                                  section .data
+     2 00000000 17                      	TestValue db 17h
+     3                                  section .text
+     4                                  	global _start
+     5                                  _start:
+     6 00000000 90                      	nop ; put your code expermiments between the 2 nops
+     7                                  
+     8 00000001 B842000000              	mov eax, 42h
+     9 00000006 030425[00000000]        	add eax, [TestValue]
+    10                                  
+    11 0000000D 90                      	nop

@@ -1,0 +1,13 @@
+     1                                  section .data
+     2 00000000 17                      	TestValue db 17h
+     3                                  section .text
+     4                                  	global _start
+     5                                  _start:
+     6 00000000 90                      	nop ; put your code expermiments between the 2 nops
+     7                                  
+     8 00000001 B842000000              	mov RAX, 42h
+     9 00000006 48BB48656C6C6F0000-     	mov RBX, "Hello"
+    10 0000000F 00                 
+    11 00000010 B9CDAB0000              	mov RCX, 0ABCDh
+    12                                  
+    13 00000015 90                      	nop

@@ -1,11 +1,17 @@
      1                                  section .data
-     2 00000000 17                      	TestValue db 17h
-     3                                  section .text
-     4                                  	global _start
-     5                                  _start:
-     6 00000000 90                      	nop ; put your code expermiments between the 2 nops
-     7                                  
-     8 00000001 B842000000              	mov eax, 42h
-     9 00000006 030425[00000000]        	add eax, [TestValue]
-    10                                  
-    11 0000000D 90                      	nop
+     2 00000000 6B656B0A00              	msg: db "kek", 0Ah, 0h
+     3                                  	msglen: equ $-msg
+     4                                  section .text
+     5                                  	global _start
+     6                                  _start:
+     7 00000000 90                      	nop ; put your code expermiments between the 2 nops
+     8                                  
+     9 00000001 B804000000              	mov eax, 4 ; sys_write
+    10 00000006 BB01000000              	mov ebx, 1 ; standard output
+    11 0000000B B9[00000000]            	mov ecx, msg ; offset of message
+    12 00000010 BA05000000              	mov edx, msglen ; length of the message
+    13 00000015 CD80                    	int 80h ; make kernel call
+    14                                  
+    15 00000017 B801000000              	mov eax, 1 ; code for exit syscall
+    16 0000001C BB00000000              	mov ebx, 0 ; return a code of zero
+    17 00000021 CD80                    	int 80h

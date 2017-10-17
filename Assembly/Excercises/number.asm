@@ -1,25 +1,30 @@
 section .data
-    inputString db "S1tri2ng  b3lbalb$"
-    outputString db "               ", 10
+    iString db "S1tri2ng  0b3lbalb$"
+    oString db "                   ", 0Ah ; 0Ah = end of string 
     
 section .text
     global _start
 _start:
-    mov eax, inputString ; put start of string into eax
-    mov ebx, outputString ; put the start of the outputstrig into ebx
-    mov edx, 0 ; string length
+    mov eax, iString ; put start of string into eax
+    mov ebx, oString ; put the start of the outputstrig into ebx
 loop:
     inc edx
     cmp byte [eax], '$' ; check if we reached the end ($)
-    jz finished  ; equals, so we are done
-    cmp byte [eax], '0'  ; 0 in ascii
+    jz finished         ; equals, so we are done
+    
+    cmp byte [eax], '0'  ; copare the value (byte) stored in eax to '0'
     jb continueLoop ;
-    cmp byte [eax], '9'  ; 9 in ascii
+    
+    cmp byte [eax], '9'  ; compare the value (byte) stored in eax to '9'
     ja continueLoop
     
 isNumber:   
-    mov dl, byte [eax]
-    mov [ebx], dl     ; move asci number to the new position
+    ; cl works, dl doesn't, why?
+    ; cl = counter register
+    ; dl = data register
+    ; btw, this might be the answer, but i dont know
+    mov cl, [eax]     ; move value at eax into cl
+    mov [ebx], cl     ; move value of cl into ebx
     inc ebx
     inc eax
     jmp loop
@@ -30,13 +35,11 @@ continueLoop:
     jmp loop
     
 finished:
-    inc ebx ; increase position by 1
-    
-    mov eax, 4 ; sys write
-    mov ebx, 1 ; standard output
-    mov ecx, outputString ; start string
-    
-    int 80H
+    inc edx             ; increment for 0Ah
+    mov eax, 4          ; sys write
+    mov ebx, 1          ; standard output
+    mov ecx, oString    ; start string
+    int 80H             ; kernel call
     
     mov eax, 4 ; the stupid shit
     mov eax, 1 ; code for exiting

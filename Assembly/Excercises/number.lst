@@ -1,46 +1,51 @@
      1                                  section .data
-     2 00000000 5331747269326E6720-         inputString db "S1tri2ng  b3lbalb$"
-     2 00000009 2062336C62616C6224 
-     3 00000012 202020202020202020-         outputString db "               ", 10
-     3 0000001B 2020202020200A     
+     2 00000000 5331747269326E6720-         iString db "S1tri2ng  0b3lbalb$"
+     2 00000009 203062336C62616C62-
+     2 00000012 24                 
+     3 00000013 202020202020202020-         oString db "                   ", 0Ah ; 0Ah = end of string 
+     3 0000001C 202020202020202020-
+     3 00000025 200A               
      4                                      
      5                                  section .text
      6                                      global _start
      7                                  _start:
-     8 00000000 B8[00000000]                mov eax, inputString ; put start of string into eax
-     9 00000005 BB[12000000]                mov ebx, outputString ; put the start of the outputstrig into ebx
-    10 0000000A BA00000000                  mov edx, 0 ; string length
-    11                                  loop:
-    12 0000000F FFC2                        inc edx
-    13 00000011 67803824                    cmp byte [eax], '$' ; check if we reached the end ($)
-    14 00000015 741E                        jz finished  ; equals, so we are done
-    15 00000017 67803830                    cmp byte [eax], '0'  ; 0 in ascii
-    16 0000001B 7212                        jb continueLoop ;
-    17 0000001D 67803839                    cmp byte [eax], '9'  ; 9 in ascii
-    18 00000021 770C                        ja continueLoop
-    19                                      
-    20                                  isNumber:   
-    21 00000023 678A10                      mov dl, byte [eax]
-    22 00000026 678813                      mov [ebx], dl     ; move asci number to the new position
-    23 00000029 FFC3                        inc ebx
-    24 0000002B FFC0                        inc eax
-    25 0000002D EBE0                        jmp loop
-    26                                  
-    27                                  continueLoop:
-    28 0000002F FFC0                        inc eax
-    29 00000031 FFC3                        inc ebx
-    30 00000033 EBDA                        jmp loop
-    31                                      
-    32                                  finished:
-    33 00000035 FFC3                        inc ebx ; increase position by 1
-    34                                      
-    35 00000037 B804000000                  mov eax, 4 ; sys write
-    36 0000003C BB01000000                  mov ebx, 1 ; standard output
-    37 00000041 B9[12000000]                mov ecx, outputString ; start string
-    38                                      
-    39 00000046 CD80                        int 80H
-    40                                      
-    41 00000048 B804000000                  mov eax, 4 ; the stupid shit
-    42 0000004D B801000000                  mov eax, 1 ; code for exiting
-    43 00000052 BB00000000                  mov ebx, 0 ; return code
-    44 00000057 CD80                        int 80H    ; kernel call
+     8 00000000 B8[00000000]                mov eax, iString ; put start of string into eax
+     9 00000005 BB[13000000]                mov ebx, oString ; put the start of the outputstrig into ebx
+    10                                  loop:
+    11 0000000A FFC2                        inc edx
+    12 0000000C 67803824                    cmp byte [eax], '$' ; check if we reached the end ($)
+    13 00000010 741E                        jz finished         ; equals, so we are done
+    14                                      
+    15 00000012 67803830                    cmp byte [eax], '0'  ; copare the value (byte) stored in eax to '0'
+    16 00000016 7212                        jb continueLoop ;
+    17                                      
+    18 00000018 67803839                    cmp byte [eax], '9'  ; compare the value (byte) stored in eax to '9'
+    19 0000001C 770C                        ja continueLoop
+    20                                      
+    21                                  isNumber:   
+    22                                      ; cl works, dl doesn't, why?
+    23                                      ; cl = counter register
+    24                                      ; dl = data register
+    25                                      ; btw, this might be the answer, but i dont know
+    26 0000001E 678A08                      mov cl, [eax]     ; move value at eax into cl
+    27 00000021 67880B                      mov [ebx], cl     ; move value of cl into ebx
+    28 00000024 FFC3                        inc ebx
+    29 00000026 FFC0                        inc eax
+    30 00000028 EBE0                        jmp loop
+    31                                  
+    32                                  continueLoop:
+    33 0000002A FFC0                        inc eax
+    34 0000002C FFC3                        inc ebx
+    35 0000002E EBDA                        jmp loop
+    36                                      
+    37                                  finished:
+    38 00000030 FFC2                        inc edx             ; increment for 0Ah
+    39 00000032 B804000000                  mov eax, 4          ; sys write
+    40 00000037 BB01000000                  mov ebx, 1          ; standard output
+    41 0000003C B9[13000000]                mov ecx, oString    ; start string
+    42 00000041 CD80                        int 80H             ; kernel call
+    43                                      
+    44 00000043 B804000000                  mov eax, 4 ; the stupid shit
+    45 00000048 B801000000                  mov eax, 1 ; code for exiting
+    46 0000004D BB00000000                  mov ebx, 0 ; return code
+    47 00000052 CD80                        int 80H    ; kernel call

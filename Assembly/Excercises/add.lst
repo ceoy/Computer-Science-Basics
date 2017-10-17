@@ -1,0 +1,20 @@
+     1                                  section .data
+     2 00000000 0A                          data db 10
+     3                                  
+     4                                  section .text
+     5                                      global _start
+     6                                  
+     7                                  _start:
+     8 00000000 8B1C25[00000000]            mov ebx, [data]  ; do this x times
+     9 00000007 B800000000                  mov eax, 0   ; the counter
+    10 0000000C B900000000                  mov ecx, 0   ; the result
+    11                                  loop:
+    12 00000011 39C3                        cmp ebx, eax ; check if the counter has reacher loops
+    13 00000013 7406                        je finish
+    14 00000015 01C1                        add ecx, eax ; add the counter to the result
+    15 00000017 FFC0                        inc eax
+    16 00000019 EBF6                        jmp loop ; repeat
+    17                                  finish:
+    18 0000001B B801000000                  mov eax, 1 ; code for exiting
+    19 00000020 BB00000000                  mov ebx, 0 ; return code
+    20 00000025 CD80                        int 80H    ; ddmake kernal call

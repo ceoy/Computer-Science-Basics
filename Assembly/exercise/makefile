@@ -1,4 +1,4 @@
-all: number
+all: number add
 
 clean:
 	rm *.o *.lst *~

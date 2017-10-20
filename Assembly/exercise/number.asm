@@ -20,11 +20,10 @@ loop:
     
 isNumber:   
     ; cl works, dl doesn't, why?
-    ; cl = counter register
-    ; dl = data register
-    ; btw, this might be the answer, but i dont know
+    ; most likely because i used edx
     mov cl, [eax]     ; move value at eax into cl
     mov [ebx], cl     ; move value of cl into ebx
+    ; i cant do memory to memory assigning, so i use a general purpose register to help
     inc ebx
     inc eax
     jmp loop
@@ -41,7 +40,6 @@ finished:
     mov ecx, oString    ; start string
     int 80H             ; kernel call
     
-    mov eax, 4 ; the stupid shit
     mov eax, 1 ; code for exiting
     mov ebx, 0 ; return code
     int 80H    ; kernel call

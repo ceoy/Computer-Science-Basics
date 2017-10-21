@@ -4,8 +4,6 @@ section .data
 section .text
 	global _start
 _start:
-	nop ; put your code expermiments between the 2 nops
-
 	mov eax, 4 ; sys_write
 	mov ebx, 1 ; standard output
 	mov ecx, msg ; offset of message

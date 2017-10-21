@@ -9,11 +9,11 @@ _start:
     mov eax, 0   ; the counter
     mov ecx, 0   ; the result
 loop:
-    cmp ebx, eax ; check if the counter has reacher loops
+    cmp ebx, eax ; check if the counter has reached the end
     ja finish
     add ecx, eax ; add the counter to the result
     inc eax
-    jmp loop ; repeat
+    jmp loop     ; repeat
 finish:
     mov eax, 1 ; code for exiting
     mov ebx, 0 ; return code

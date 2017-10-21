@@ -19,11 +19,8 @@ loop:
     ja continueLoop
     
 isNumber:   
-    ; cl works, dl doesn't, why?
-    ; most likely because i used edx
     mov cl, [eax]     ; move value at eax into cl
     mov [ebx], cl     ; move value of cl into ebx
-    ; i cant do memory to memory assigning, so i use a general purpose register to help
     inc ebx
     inc eax
     jmp loop

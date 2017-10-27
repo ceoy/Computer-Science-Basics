@@ -1,0 +1,31 @@
+     1                                  ; Description: Calculates the Sum of n Integers: 0+1+2+...+n
+     2                                  
+     3                                  section .text
+     4                                      global _start ; required for the entry point
+     5                                      
+     6                                  
+     7                                  ;***********************    
+     8                                  ; in:   ah=n
+     9                                  ; out:  al=result
+    10                                  calcSum:
+    11 00000000 53                          push rbx    ; push rbx
+    12 00000001 50                          push rax    ; push rax
+    13 00000002 30C0                        xor al, al  ; 00000000 al
+    14                                  .next:           ; next label
+    15 00000004 00E0                        add al, ah  ; add ah to al 
+    16 00000006 FECC                        dec ah      ; decrease
+    17 00000008 75FA                        jnz .next    ; jump if not zero
+    18 0000000A 5B                          pop rbx     ; get rax
+    19 0000000B 88FC                        mov ah, bh
+    20 0000000D 5B                          pop rbx    ; get the actuall x
+    21 0000000E C3                          ret
+    22                                  ;***********************
+    23                                  
+    24                                  _start:
+    25 0000000F B405                        mov ah, 5
+    26 00000011 E8EAFFFFFF                  call calcSum
+    27                                      
+    28                                  finish: 
+    29 00000016 B801000000                  mov rax, 1 ; code for exit
+    30 0000001B BB00000000                  mov rbx, 0 ; return code
+    31 00000020 CD80                        int 80H    ; make kernel call

@@ -17,3 +17,4 @@ number.o: number.asm
 	
 div.o: div.asm
 	nasm -f elf64 -g -F dwarf div.asm -l div.lst
+	

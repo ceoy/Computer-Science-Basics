@@ -5,6 +5,7 @@
 section .text
 global numberTest
 global convertStringToNumber
+global countToDollar
 
 ;***********************  
 ; Procedure numberTest
@@ -68,5 +69,26 @@ convertStringToNumber:
 .finished:
     pop rbx
     pop rcx
+    ret
+;***********************
+
+;***********************
+; Procedure countToDollar
+; IN:
+;   ebx the starting address of the string
+; RETURNS:
+;   The length in eax
+; DESCRIPTION: Counts the number of characters until $ in a given string
+;***********************
+countToDollar:
+    mov eax, 0  ; set counter to 0
+.loop:
+    cmp byte [ebx], '$' ; check if this is the end of the string
+    je .finished
+    inc ebx ; read next character
+    inc eax ; increase counter
+    jmp .loop
+    
+.finished:
     ret
 ;***********************

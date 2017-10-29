@@ -10,11 +10,13 @@ section .data
     testsDone db "tests done", 0Ah
     testsDoneLength equ $-testsDone
     
-    ; first test, first message
+    ; test messages
     numberValidString db "1123$"
     numberValidStringSecond db "912551$"
     numberInvalidString db "ab$"
     numberNoEndString db "123"
+    
+    
     
 section .text
     global _start
@@ -23,6 +25,7 @@ section .text
     extern displayText ; displays text that is passed into it
     extern numberTest ; checks if all ASCII characters are digits
     extern convertStringToNumber ; converts ascii string to number
+    extern countToDollar; counts characters in a string up to a $
 
 _start:
 ;**********************
@@ -64,8 +67,25 @@ _start:
     mov rbx, 912551
     cmp rax, rbx
     jne error
-    
 ;**********************
+
+;**********************
+; test countToDoller
+;**********************
+    mov ebx, numberValidString
+    call countToDollar
+    cmp eax, 4
+    jne error
+    
+    mov ebx, numberValidStringSecond
+    call countToDollar
+    cmp eax, 6
+    jne error
+    
+    mov ebx, numberValidString
+    call countToDollar
+    cmp eax, 5
+    je error
 
 ;**********************
     jmp finish  ; we are done with the tests

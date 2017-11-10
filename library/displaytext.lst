@@ -1,0 +1,25 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: displays a text
+     4                                  
+     5                                  section .text    
+     6                                  global displayText
+     7                                  
+     8                                  ;***********************  
+     9                                  ; Procedure displayText
+    10                                  ; IN:
+    11                                  ;   ecx: the starting address of the string
+    12                                  ;   edx: the length of the string
+    13                                  ; RETURNS:
+    14                                  ;   Nothing
+    15                                  ; TRASHES:
+    16                                  ;   Nothing
+    17                                  ; DESCRIPTION: Displays the passed text to the standard output
+    18                                  ;*********************** 
+    19                                  displayText:
+    20 00000000 B804000000                  mov eax, 4  ; write call
+    21 00000005 BB01000000                  mov ebx, 1  ; default output
+    22 0000000A CD80                        int 80h     ; call
+    23                                  
+    24 0000000C C3                          ret ; return
+    25                                  ;***********************  

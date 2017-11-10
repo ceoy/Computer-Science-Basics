@@ -1,0 +1,71 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: calls a procedure from another file
+     4                                  section .data
+     5 00000000 66636B696E67206E6F-         error db "fcking noob", 10
+     5 00000009 6F620A             
+     6                                      errorLength equ $-error
+     7                                  section .text
+     8                                      global _start ; required for the entry point
+     9                                      
+    10                                  extern calcSum
+    11                                  extern someTriangle
+    12                                  extern calcFib
+    13                                  
+    14                                  fckup:
+    15 00000000 B804000000                  mov eax, 4  ; write call
+    16 00000005 BB01000000                  mov ebx, 1  ; default output
+    17 0000000A B9[00000000]                mov ecx, error
+    18 0000000F BA0C000000                  mov edx, errorLength
+    19 00000014 CD80                        int 80h     ; call
+    20 00000016 EB61                        jmp finish
+    21                                  
+    22                                  _start:
+    23 00000018 B805000000                  mov eax, 5
+    24 0000001D E8(00000000)                call calcSum
+    25                                      
+    26 00000022 83FA0F                      cmp edx, 15
+    27 00000025 75D9                        jne fckup
+    28                                      
+    29 00000027 B864000000                  mov eax, 100
+    30 0000002C E8(00000000)                call calcSum
+    31                                      
+    32 00000031 81FABA130000                cmp edx, 5050
+    33 00000037 75C7                        jne fckup
+    34                                      
+    35 00000039 B403                        mov ah, 3
+    36 0000003B B002                        mov al, 2
+    37 0000003D E8(00000000)                call someTriangle
+    38                                      
+    39 00000042 83FA03                      cmp edx, 3
+    40 00000045 75B9                        jne fckup
+    41                                      
+    42 00000047 B404                        mov ah, 4
+    43 00000049 B004                        mov al, 4
+    44 0000004B E8(00000000)                call someTriangle
+    45                                      
+    46 00000050 83FA01                      cmp edx, 1
+    47 00000053 75AB                        jne fckup
+    48                                      
+    49 00000055 B404                        mov ah, 4
+    50 00000057 E8(00000000)                call calcFib
+    51                                      
+    52 0000005C 83FA05                      cmp edx, 5
+    53 0000005F 759F                        jne fckup
+    54                                      
+    55 00000061 B402                        mov ah, 2
+    56 00000063 E8(00000000)                call calcFib
+    57                                      
+    58 00000068 83FA02                      cmp edx, 2
+    59 0000006B 7593                        jne fckup
+    60                                      
+    61 0000006D B401                        mov ah, 1
+    62 0000006F E8(00000000)                call calcFib
+    63                                      
+    64 00000074 83FA01                      cmp edx, 1
+    65 00000077 7587                        jne fckup
+    66                                          
+    67                                  finish: 
+    68 00000079 B801000000                  mov rax, 1 ; code for exit
+    69 0000007E BB00000000                  mov rbx, 0 ; return code    
+    70 00000083 CD80                        int 80H    ; make kernel call

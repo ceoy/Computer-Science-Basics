@@ -6,6 +6,9 @@ section .data
     failed db "test failed", 0Ah
     failedLength equ $-failed   
     
+    ; please input a message
+    pleaseInput db "what is your name?: "
+    pleaseInputLength equ $-pleaseInput
     ; tests done message
     testsDone db "tests done", 0Ah
     testsDoneLength equ $-testsDone
@@ -16,7 +19,14 @@ section .data
     numberInvalidString db "ab$"
     numberNoEndString db "123"
     
+    stringToInvert db "hi i am tim$"
+    fckoff db "lul"
+    stringInverted db "mit ma i ih$"
+                     ;"mi i a timh$"
     
+section .bss
+    
+    readUserName: resb 36 ; initialize 36 bytes (35 is recommended, the last one is for a line feed)
     
 section .text
     global _start
@@ -25,9 +35,13 @@ section .text
     extern displayText ; displays text that is passed into it
     extern numberTest ; checks if all ASCII characters are digits
     extern convertStringToNumber ; converts ascii string to number
+    extern readString ; reads a string from the user input
     extern countToDollar; counts characters in a string up to a $
+    extern invertAString ; inverts a string
 
 _start:
+
+    nop
 ;**********************
 ; tests numberTest
 ;********************** 
@@ -86,7 +100,40 @@ _start:
     call countToDollar
     cmp eax, 5
     je error
+    
+;**********************
+; test readString
+;**********************
+    ; ask the user to input his name
+    mov ecx, pleaseInput
+    mov edx, pleaseInputLength
+    call displayText
+ 
+    ; if you press enter it wil read the enter press aswell
+    ; otherwise, hit control-d to end the input
+    mov ecx, readUserName
+    mov edx, 34
+    call readString 
+    
+    cmp byte [ecx + 34], '$'
+    jne error
+    
+    mov byte [ecx + 35], 0Ah ; add line feed
 
+    ; you kinda have to compare the input yourself
+    mov edx, 36
+    call displayText
+    
+;**********************
+
+;**********************
+; test invertAString
+;**********************
+    mov ebx, stringToInvert
+    call invertAString
+    
+    mov ebx, stringToInvert
+    
 ;**********************
     jmp finish  ; we are done with the tests
 
@@ -99,8 +146,10 @@ error:
 finish:
     mov ecx, testsDone
     mov edx, testsDoneLength
-    call displayText 
+    call displayText
     
     mov rax, 1 ; code for exit
     mov rbx, 0 ; return code    
     int 80H    ; make kernel call
+    
+nop

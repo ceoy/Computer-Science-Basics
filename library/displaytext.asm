@@ -18,7 +18,7 @@ global displayText
 ;*********************** 
 displayText:
     mov eax, 4  ; write call
-    mov ebx, 1  ; system.write
+    mov ebx, 1  ; default output
     int 80h     ; call
 
     ret ; return

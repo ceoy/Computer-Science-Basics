@@ -1,0 +1,22 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: Calculates the Sum of n Integers: 0+1+2+...+n
+     4                                  
+     5                                  section .text    
+     6                                  global shiftsBoolean  
+     7                                  
+     8                                  ;***********************    
+     9                                  ; in:   ah=string to display
+    10                                  ; out:  al=result
+    11                                  shiftsBoolean:  
+    12 00000000 B900000000                  mov rcx, 0 ; set counter to 0
+    13                                  .loop:           ; next label
+    14 00000005 4883F800                    cmp rax, 0
+    15 00000009 7408                        je .done
+    16 0000000B 48FFC1                      inc rcx      ; increase counter
+    17 0000000E 48D1E8                      shr rax, 1   ; divide by 2
+    18 00000011 EBF2                        jmp .loop
+    19                                      
+    20                                  .done:
+    21 00000013 C3                          ret
+    22                                  ;***********************

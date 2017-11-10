@@ -1,0 +1,161 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: tests the library function
+     4                                  section .data    
+     5                                      ; message for failed tests
+     6 00000000 74657374206661696C-         failed db "test failed", 0Ah
+     6 00000009 65640A             
+     7                                      failedLength equ $-failed   
+     8                                      
+     9                                      ; please input a message
+    10 0000000C 776861742069732079-         pleaseInput db "what is your name?: "
+    10 00000015 6F7572206E616D653F-
+    10 0000001E 3A20               
+    11                                      pleaseInputLength equ $-pleaseInput
+    12                                      ; tests done message
+    13 00000020 746573747320646F6E-         testsDone db "tests done", 0Ah
+    13 00000029 650A               
+    14                                      testsDoneLength equ $-testsDone
+    15                                      
+    16                                      ; test messages
+    17 0000002B 3131323324                  numberValidString db "1123$"
+    18 00000030 39313235353124              numberValidStringSecond db "912551$"
+    19 00000037 616224                      numberInvalidString db "ab$"
+    20 0000003A 313233                      numberNoEndString db "123"
+    21                                      
+    22 0000003D 6869206920616D2074-         stringToInvert db "hi i am tim$"
+    22 00000046 696D24             
+    23 00000049 6C756C                      fckoff db "lul"
+    24 0000004C 6D6974206D61206920-         stringInverted db "mit ma i ih$"
+    24 00000055 696824             
+    25                                                       ;"mi i a timh$"
+    26                                      
+    27                                  section .bss
+    28                                      
+    29 00000000 <res 00000024>              readUserName: resb 36 ; initialize 36 bytes (35 is recommended, the last one is for a line feed)
+    30                                      
+    31                                  section .text
+    32                                      global _start
+    33                                      
+    34                                      ; imports
+    35                                      extern displayText ; displays text that is passed into it
+    36                                      extern numberTest ; checks if all ASCII characters are digits
+    37                                      extern convertStringToNumber ; converts ascii string to number
+    38                                      extern readString ; reads a string from the user input
+    39                                      extern countToDollar; counts characters in a string up to a $
+    40                                      extern invertAString ; inverts a string
+    41                                  
+    42                                  _start:
+    43                                  
+    44 00000000 90                          nop
+    45                                  ;**********************
+    46                                  ; tests numberTest
+    47                                  ;********************** 
+    48                                      ; first test: should work
+    49 00000001 B9[2B000000]                mov ecx, numberValidString
+    50 00000006 E8(00000000)                call numberTest
+    51 0000000B 83F800                      cmp eax, 0
+    52 0000000E 0F85C4000000                jne error
+    53                                      
+    54                                      ; second test: should fail
+    55 00000014 B9[37000000]                mov ecx, numberInvalidString
+    56 00000019 E8(00000000)                call numberTest
+    57 0000001E 83F801                      cmp eax, 1
+    58 00000021 0F85B1000000                jne error
+    59                                  
+    60                                      ; thirt test: should fail, no end of string
+    61 00000027 B9[3A000000]                mov ecx, numberNoEndString  
+    62 0000002C E8(00000000)                call numberTest
+    63 00000031 83F801                      cmp eax, 1
+    64 00000034 0F859E000000                jne error
+    65                                  ;**********************
+    66                                  
+    67                                  ;**********************
+    68                                  ; test convertStringToNumber
+    69                                  ;**********************
+    70                                  
+    71                                      ; first tests: should work
+    72 0000003A B9[2B000000]                mov ecx, numberValidString
+    73 0000003F E8(00000000)                call convertStringToNumber
+    74 00000044 BB63040000                  mov rbx, 1123
+    75 00000049 4839D8                      cmp rax, rbx
+    76 0000004C 0F8586000000                jne error
+    77                                      
+    78                                      ; second test: should work
+    79 00000052 B9[30000000]                mov ecx, numberValidStringSecond
+    80 00000057 E8(00000000)                call convertStringToNumber
+    81 0000005C BBA7EC0D00                  mov rbx, 912551
+    82 00000061 4839D8                      cmp rax, rbx
+    83 00000064 7572                        jne error
+    84                                  ;**********************
+    85                                  
+    86                                  ;**********************
+    87                                  ; test countToDoller
+    88                                  ;**********************
+    89 00000066 BB[2B000000]                mov ebx, numberValidString
+    90 0000006B E8(00000000)                call countToDollar
+    91 00000070 83F804                      cmp eax, 4
+    92 00000073 7563                        jne error
+    93                                      
+    94 00000075 BB[30000000]                mov ebx, numberValidStringSecond
+    95 0000007A E8(00000000)                call countToDollar
+    96 0000007F 83F806                      cmp eax, 6
+    97 00000082 7554                        jne error
+    98                                      
+    99 00000084 BB[2B000000]                mov ebx, numberValidString
+   100 00000089 E8(00000000)                call countToDollar
+   101 0000008E 83F805                      cmp eax, 5
+   102 00000091 7445                        je error
+   103                                      
+   104                                  ;**********************
+   105                                  ; test readString
+   106                                  ;**********************
+   107                                      ; ask the user to input his name
+   108 00000093 B9[0C000000]                mov ecx, pleaseInput
+   109 00000098 BA14000000                  mov edx, pleaseInputLength
+   110 0000009D E8(00000000)                call displayText
+   111                                   
+   112                                      ; if you press enter it wil read the enter press aswell
+   113                                      ; otherwise, hit control-d to end the input
+   114 000000A2 B9[00000000]                mov ecx, readUserName
+   115 000000A7 BA22000000                  mov edx, 34
+   116 000000AC E8(00000000)                call readString 
+   117                                      
+   118 000000B1 6780792224                  cmp byte [ecx + 34], '$'
+   119 000000B6 7520                        jne error
+   120                                      
+   121 000000B8 67C641230A                  mov byte [ecx + 35], 0Ah ; add line feed
+   122                                  
+   123                                      ; you kinda have to compare the input yourself
+   124 000000BD BA24000000                  mov edx, 36
+   125 000000C2 E8(00000000)                call displayText
+   126                                      
+   127                                  ;**********************
+   128                                  
+   129                                  ;**********************
+   130                                  ; test invertAString
+   131                                  ;**********************
+   132 000000C7 BB[3D000000]                mov ebx, stringToInvert
+   133 000000CC E8(00000000)                call invertAString
+   134                                      
+   135 000000D1 BB[3D000000]                mov ebx, stringToInvert
+   136                                      
+   137                                  ;**********************
+   138 000000D6 EB0F                        jmp finish  ; we are done with the tests
+   139                                  
+   140                                  error:
+   141 000000D8 B9[00000000]                mov ecx, failed         ; start of failed message
+   142 000000DD BA0C000000                  mov edx, failedLength   ; length of string
+   143 000000E2 E8(00000000)                call displayText        ; call procedure
+   144                                  
+   145                                      
+   146                                  finish:
+   147 000000E7 B9[20000000]                mov ecx, testsDone
+   148 000000EC BA0B000000                  mov edx, testsDoneLength
+   149 000000F1 E8(00000000)                call displayText
+   150                                      
+   151 000000F6 B801000000                  mov rax, 1 ; code for exit
+   152 000000FB BB00000000                  mov rbx, 0 ; return code    
+   153 00000100 CD80                        int 80H    ; make kernel call
+   154                                      
+   155 00000102 90                      nop

@@ -1,0 +1,18 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: calls a procedure from another file
+     4                                  section .text
+     5                                      global _start ; required for the entry point
+     6                                      
+     7                                  extern shiftsBoolean
+     8                                  
+     9                                  _start:
+    10 00000000 B820000000                  mov rax, 20h
+    11 00000005 E8(00000000)                call shiftsBoolean
+    12                                  
+    13 0000000A 4883F907                    cmp rcx, 7
+    14                                      
+    15                                  finish: 
+    16 0000000E B801000000                  mov rax, 1 ; code for exit
+    17 00000013 BB00000000                  mov rbx, 0 ; return code    
+    18 00000018 CD80                        int 80H    ; make kernel call

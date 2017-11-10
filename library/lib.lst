@@ -1,0 +1,177 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: Calculates the Sum of n Integers: 0+1+2+...+n
+     4                                  
+     5                                  section .text
+     6                                  ; exports
+     7                                  global numberTest
+     8                                  global convertStringToNumber
+     9                                  global readString
+    10                                  global countToDollar
+    11                                  global invertAString
+    12                                  
+    13                                  ;***********************  
+    14                                  ; Procedure numberTest
+    15                                  ; IN:
+    16                                  ;   ecx: the starting address of the string
+    17                                  ; OUT:
+    18                                  ;   eax: 0 if all ASCII characters until '$' are digits - else 1
+    19                                  ; TRASHES:
+    20                                  ;   Nothing
+    21                                  ; DESCRIPTION: Analyses if all characters form a starting point in memory (ecx))
+    22                                  ;   are digits. End of string is '$'
+    23                                  ;***********************  
+    24                                  numberTest:
+    25 00000000 51                          push rcx ; save state of ecx
+    26                                      
+    27 00000001 B800000000                  mov eax, 0 ; assume that the ASCII characters are digits
+    28                                  .loop:
+    29 00000006 67803924                    cmp byte [ecx], '$' ; is end of string?
+    30 0000000A 7415                        je .finished
+    31 0000000C 67803930                    cmp byte [ecx], '0' ; compare to 0
+    32 00000010 720A                        jb .failed   ; is not a digit
+    33 00000012 67803939                    cmp byte [ecx], '9' ; 
+    34 00000016 7704                        ja .failed ; is not a digit
+    35 00000018 FFC1                        inc ecx
+    36 0000001A EBEA                        jmp .loop
+    37                                      
+    38                                  .failed:
+    39 0000001C B801000000                  mov eax, 1
+    40                                      
+    41                                  .finished:
+    42 00000021 59                          pop rcx ; pop ecx back
+    43 00000022 C3                          ret ; return from procedure
+    44                                  ;***********************  
+    45                                  
+    46                                  ;***********************  
+    47                                  ; Procedure convertStringToNumber
+    48                                  ; IN:
+    49                                  ;   ecx: int string
+    50                                  ; OUT:
+    51                                  ;   rax: the converted string
+    52                                  ; DESCRIPTION: Converts a string of digits into its binary value
+    53                                  ; Assumption: The memory contains only digits and it is not empty
+    54                                  ; Assumption: We have already tested that there are only digits in the string
+    55                                  ;***********************
+    56                                  convertStringToNumber:
+    57 00000023 51                          push rcx
+    58 00000024 53                          push rbx
+    59                                      
+    60 00000025 B800000000                  mov rax, 0          ; set to 0
+    61                                  .loop:
+    62 0000002A 67803924                    cmp byte [ecx], '$' ; end of strig?
+    63 0000002E 7414                        je .finished
+    64 00000030 BB0A000000                  mov ebx, 10         ; prepare multiplication
+    65 00000035 F7E3                        mul ebx             ; multiply eax by 10
+    66 00000037 678A11                      mov dl, byte [ecx]  ; get ascii character
+    67 0000003A 80EA30                      sub dl, '0'         ; convert to int
+    68 0000003D 4801D0                      add rax, rdx        ; add it
+    69 00000040 FFC1                        inc ecx             ; get next ascii character
+    70 00000042 EBE6                        jmp .loop           ; repeat
+    71                                      
+    72                                  .finished:
+    73 00000044 5B                          pop rbx
+    74 00000045 59                          pop rcx
+    75 00000046 C3                          ret
+    76                                  ;***********************
+    77                                  
+    78                                  ;***********************
+    79                                  ; Procedure readString
+    80                                  ; IN:
+    81                                  ;   ecx the starting address of the string
+    82                                  ;   edx let the procedure know how many bytes to read
+    83                                  ; RETURNS:
+    84                                  ;   Nothing
+    85                                  ; TRASHES:
+    86                                  ;   Nothing
+    87                                  ; DESCRIPTION: Reads a number of bytes and places them in memory, followed by '$'
+    88                                  ; WHat else could be done: filter out line feed (0Ah) 
+    89                                  ;***********************
+    90                                  
+    91                                  readString:
+    92 00000047 50                          push rax
+    93 00000048 53                          push rbx
+    94                                  
+    95 00000049 B803000000                  mov eax, 3 ; system read
+    96 0000004E BB00000000                  mov ebx, 0 ; default input
+    97 00000053 CD80                        int 80h    ; interrupt
+    98                                      
+    99                                      ; now append a dolla
+   100 00000055 67C6041124                  mov byte [ecx + edx], '$'
+   101                                      
+   102 0000005A 5B                          pop rbx
+   103 0000005B 58                          pop rax
+   104 0000005C C3                          ret
+   105                                  ;***********************
+   106                                  
+   107                                  ;***********************
+   108                                  ; Procedure countToDollar
+   109                                  ; IN:
+   110                                  ;   ebx the starting address of the string
+   111                                  ; RETURNS:
+   112                                  ;   The length in eax
+   113                                  ; DESCRIPTION: Counts the number of characters until $ in a given string
+   114                                  ;***********************
+   115                                  countToDollar:
+   116 0000005D B800000000                  mov eax, 0  ; set counter to 0
+   117                                  .loop:
+   118 00000062 67803B24                    cmp byte [ebx], '$' ; check if this is the end of the string
+   119 00000066 7406                        je .finished
+   120 00000068 FFC3                        inc ebx ; read next character
+   121 0000006A FFC0                        inc eax ; increase counter
+   122 0000006C EBF4                        jmp .loop
+   123                                      
+   124                                  .finished:
+   125 0000006E C3                          ret
+   126                                  ;***********************
+   127                                  
+   128                                  ;***********************
+   129                                  ; Procedure invertAString
+   130                                  ; IN:
+   131                                  ;   ebx the starting address of the string
+   132                                  ; RETURNS:
+   133                                  ;   Nothing
+   134                                  ; TRASHES:
+   135                                  ;   Nothing
+   136                                  ; DESCRIPTION: A procedure which inverts a given string terminated by $
+   137                                  ;***********************
+   138                                  invertAString:
+   139 0000006F 53                          push rbx
+   140 00000070 50                          push rax
+   141 00000071 51                          push rcx
+   142                                      
+   143 00000072 89D8                        mov eax, ebx ; move the start of the string into eax
+   144 00000074 B100                        mov cl, 0    ; counter, how many times do we have to stuff
+   145                                      
+   146                                  .countLoop:
+   147 00000076 67803824                    cmp byte [eax], '$' ; are we done?
+   148 0000007A 7406                        je .invert          ; end of string bitches
+   149 0000007C FFC0                        inc eax             ; not end of string
+   150 0000007E FEC1                        inc cl              
+   151 00000080 EBF4                        jmp .countLoop       ; continue
+   152                                      
+   153                                  .invert:
+   154 00000082 D0E9                        shr cl, 1 ; divide by 2 the fast way
+   155                                      
+   156                                      
+   157                                  .invertLoop:
+   158 00000084 FFC8                        dec eax             ; dont swap $
+   159 00000086 80F900                      cmp cl, 0           ; are we in the middle?
+   160 00000089 7612                        jbe .finished       ; if yes, be done
+   161 0000008B 51                          push rcx            ; safe rcx, so we safe cl
+   162 0000008C 678A28                      mov ch, byte [eax]  ; get value of eax
+   163 0000008F 678A0B                      mov cl, byte [ebx]  ; get value of ebx
+   164 00000092 678808                      mov byte [eax], cl  ; put cl into eax
+   165 00000095 67882B                      mov byte [ebx], ch  ; put ch into ebx
+   166 00000098 59                          pop rcx             ; get cl
+   167 00000099 FEC9                        dec cl              ; remove one
+   168 0000009B EBE7                        jmp .invertLoop     ; continue
+   169                                  
+   170                                  .finished:
+   171 0000009D 59                          pop rcx
+   172 0000009E 58                          pop rax
+   173 0000009F 5B                          pop rbx
+   174 000000A0 C3                          ret
+   175                                  
+   176                                  
+   177                                  ;***********************

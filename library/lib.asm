@@ -3,9 +3,12 @@
 ; Description: Calculates the Sum of n Integers: 0+1+2+...+n
 
 section .text
+; exports
 global numberTest
 global convertStringToNumber
+global readString
 global countToDollar
+global invertAString
 
 ;***********************  
 ; Procedure numberTest
@@ -73,6 +76,35 @@ convertStringToNumber:
 ;***********************
 
 ;***********************
+; Procedure readString
+; IN:
+;   ecx the starting address of the string
+;   edx let the procedure know how many bytes to read
+; RETURNS:
+;   Nothing
+; TRASHES:
+;   Nothing
+; DESCRIPTION: Reads a number of bytes and places them in memory, followed by '$'
+; WHat else could be done: filter out line feed (0Ah) 
+;***********************
+
+readString:
+    push rax
+    push rbx
+
+    mov eax, 3 ; system read
+    mov ebx, 0 ; default input
+    int 80h    ; interrupt
+    
+    ; now append a dolla
+    mov byte [ecx + edx], '$'
+    
+    pop rbx
+    pop rax
+    ret
+;***********************
+
+;***********************
 ; Procedure countToDollar
 ; IN:
 ;   ebx the starting address of the string
@@ -91,4 +123,55 @@ countToDollar:
     
 .finished:
     ret
+;***********************
+
+;***********************
+; Procedure invertAString
+; IN:
+;   ebx the starting address of the string
+; RETURNS:
+;   Nothing
+; TRASHES:
+;   Nothing
+; DESCRIPTION: A procedure which inverts a given string terminated by $
+;***********************
+invertAString:
+    push rbx
+    push rax
+    push rcx
+    
+    mov eax, ebx ; move the start of the string into eax
+    mov cl, 0    ; counter, how many times do we have to stuff
+    
+.countLoop:
+    cmp byte [eax], '$' ; are we done?
+    je .invert          ; end of string bitches
+    inc eax             ; not end of string
+    inc cl              
+    jmp .countLoop       ; continue
+    
+.invert:
+    shr cl, 1 ; divide by 2 the fast way
+    
+    
+.invertLoop:
+    dec eax             ; dont swap $
+    cmp cl, 0           ; are we in the middle?
+    jbe .finished       ; if yes, be done
+    push rcx            ; safe rcx, so we safe cl
+    mov ch, byte [eax]  ; get value of eax
+    mov cl, byte [ebx]  ; get value of ebx
+    mov byte [eax], cl  ; put cl into eax
+    mov byte [ebx], ch  ; put ch into ebx
+    pop rcx             ; get cl
+    dec cl              ; remove one
+    jmp .invertLoop     ; continue
+
+.finished:
+    pop rcx
+    pop rax
+    pop rbx
+    ret
+
+
 ;***********************

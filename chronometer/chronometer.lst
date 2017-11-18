@@ -1,0 +1,51 @@
+     1                                  ; Author: Tim Jahn
+     2                                  ; Email: ceoymw@gmail.com
+     3                                  ; Description: calls a procedure from another file
+     4                                  section .data
+     5                                      ; create masks
+     6                                      
+     7                                  section .text
+     8                                      global _start ; required for the entry point
+     9                                  
+    10                                  _start:
+    11                                  
+    12                                      ;xor eax, eax ; set to 0
+    13                                      ; wait 1 sec, call chronometer
+    14                                  second:
+    15                                      ; increase second by one
+    16 00000000 4989C0                      mov r8, rax
+    17 00000003 4983E03F                    and r8, 63 ; mask this shit properly
+    18 00000007 49FFC0                      inc r8 ; increase seconds by one
+    19 0000000A 4983F83C                    cmp r8, 60 ; check if we reached a minute
+    20 0000000E 722D                        jb doneAdding
+    21 00000010 4D31C0                      xor r8, r8 ; set back to 0
+    22 00000013 4989C1                      mov r9, rax
+    23 00000016 49C1E906                    shr r9, 6 ; shift away seconds
+    24 0000001A 4983E03F                    and r8, 63  
+    25 0000001E 49FFC1                      inc r9    ; add a minute
+    26 00000021 4983F93C                    cmp r9, 60 ; check if we reached a hour
+    27 00000025 7216                        jb doneAdding
+    28 00000027 4D31C9                      xor r9, r9 ; set to 0
+    29 0000002A 4989C2                      mov r10, rax
+    30 0000002D 49C1EA0B                    shr r10, 11 ; move hours
+    31 00000031 49FFC2                      inc r10
+    32 00000034 4983FA18                    cmp r10, 24 ; check if we reached a day
+    33 00000038 7203                        jb doneAdding
+    34 0000003A 4D31D2                      xor r10, r10 ; set to 0
+    35                                      
+    36                                  doneAdding:
+    37                                      ; write back into 
+    38 0000003D 31C0                        xor eax, eax ; set to 0
+    39 0000003F 4C89D0                      mov rax, r10
+    40 00000042 C1E005                      shl eax, 5
+    41 00000045 4C89C8                      mov rax, r9
+    42 00000048 C1E006                      shl eax, 6
+    43 0000004B 4C89C0                      mov rax, r8
+    44                                      
+    45                                      ; be done
+    46 0000004E EBB0                        jmp second
+    47                                      
+    48                                  finish: 
+    49 00000050 B801000000                  mov rax, 1 ; code for exit
+    50 00000055 BB00000000                  mov rbx, 0 ; return code    
+    51 0000005A CD80                        int 80H    ; make kernel call

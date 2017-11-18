@@ -77,20 +77,18 @@
     77                                      
     78                                  fib:
     79 0000004B 50                          push rax
-    80                                      ; what has to happen:
-    81                                      ; check if ah is either 0 or 1 => returns 1
-    82 0000004C 80FC00                      cmp ah, 0
-    83 0000004F 7415                        je .add
-    84 00000051 80FC01                      cmp ah, 1
-    85 00000054 7410                        je .add
-    86 00000056 FECC                        dec ah
-    87 00000058 E8EEFFFFFF                  call fib
-    88 0000005D FECC                        dec ah
-    89 0000005F E8E7FFFFFF                  call fib
-    90 00000064 EB03                        jmp .done
-    91                                  .add:
-    92 00000066 83C201                      add edx, 1
-    93                                  .done:
-    94 00000069 58                          pop rax
-    95 0000006A C3                          ret
-    96                                      
+    80 0000004C 80FC00                      cmp ah, 0
+    81 0000004F 7415                        je .add
+    82 00000051 80FC01                      cmp ah, 1
+    83 00000054 7410                        je .add
+    84 00000056 FECC                        dec ah
+    85 00000058 E8EEFFFFFF                  call fib
+    86 0000005D FECC                        dec ah
+    87 0000005F E8E7FFFFFF                  call fib
+    88 00000064 EB03                        jmp .done
+    89                                  .add:
+    90 00000066 83C201                      add edx, 1
+    91                                  .done:
+    92 00000069 58                          pop rax
+    93 0000006A C3                          ret
+    94                                      

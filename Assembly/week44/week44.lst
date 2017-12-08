@@ -1,18 +1,35 @@
      1                                  ; Author: Tim Jahn
      2                                  ; Email: ceoymw@gmail.com
      3                                  ; Description: calls a procedure from another file
-     4                                  section .text
-     5                                      global _start ; required for the entry point
-     6                                      
-     7                                  extern shiftsBoolean
-     8                                  
-     9                                  _start:
-    10 00000000 B820000000                  mov rax, 20h
-    11 00000005 E8(00000000)                call shiftsBoolean
-    12                                  
-    13 0000000A 4883F907                    cmp rcx, 7
-    14                                      
-    15                                  finish: 
-    16 0000000E B801000000                  mov rax, 1 ; code for exit
-    17 00000013 BB00000000                  mov rbx, 0 ; return code    
-    18 00000018 CD80                        int 80H    ; make kernel call
+     4                                  section .bss:
+     5                                      textlength equ 4
+     6 00000000 <res 00000004>              text: resb textlength ; reserve 4 bytes
+     6          ******************       warning: uninitialized space declared in non-BSS section `.bss:': zeroing
+     7                                  section .data
+     8 00000000 303132333435363738-         lookup db "0123456789ABCDEF"
+     8 00000009 39414243444546     
+     9                                      
+    10                                  section .text
+    11                                      global _start ; required for the entry point
+    12                                      
+    13                                  extern shiftsBoolean
+    14                                  extern hexToLog
+    15                                  
+    16                                  _start:
+    17 00000000 B820000000                  mov rax, 20h
+    18 00000005 E8(00000000)                call shiftsBoolean
+    19                                  
+    20 0000000A 4883F907                    cmp rcx, 7
+    21                                  
+    22 0000000E 48B8-                       mov rax, text
+    22 00000010 [0000000000000000] 
+    23 00000018 BB04000000                  mov rbx, textlength
+    24 0000001D 48B9-                       mov rcx, lookup
+    24 0000001F [0000000000000000] 
+    25 00000027 E8(00000000)                call hexToLog
+    26                                  
+    27                                  finish:
+    28 0000002C B801000000                  mov rax, 1 ; code for exit
+    29 00000031 BB00000000                  mov rbx, 0 ; return code    
+    30 00000036 CD80                        int 80H    ; make kernel call
+    31                                  

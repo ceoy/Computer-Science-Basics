@@ -42,6 +42,5 @@ hexToLog:
 	
 	; ecx now contains the hex string
 	; convert hex ascii to 
-	
-	
+
 	

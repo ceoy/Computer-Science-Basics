@@ -3,20 +3,44 @@
      3                                  ; Description: Calculates the Sum of n Integers: 0+1+2+...+n
      4                                  
      5                                  section .text    
-     6                                  global shiftsBoolean  
-     7                                  
-     8                                  ;***********************    
-     9                                  ; in:   ah=string to display
-    10                                  ; out:  al=result
-    11                                  shiftsBoolean:  
-    12 00000000 B900000000                  mov rcx, 0 ; set counter to 0
-    13                                  .loop:           ; next label
-    14 00000005 4883F800                    cmp rax, 0
-    15 00000009 7408                        je .done
-    16 0000000B 48FFC1                      inc rcx      ; increase counter
-    17 0000000E 48D1E8                      shr rax, 1   ; divide by 2
-    18 00000011 EBF2                        jmp .loop
-    19                                      
-    20                                  .done:
-    21 00000013 C3                          ret
-    22                                  ;***********************
+     6                                  global shiftsBoolean
+     7                                  global hexToLog
+     8                                  
+     9                                  ;***********************    
+    10                                  ; in:   rax: number
+    11                                  ; out:  rcx: log
+    12                                  ;***********************
+    13                                  shiftsBoolean:  
+    14 00000000 B900000000                  mov rcx, 0   ; set counter to 0
+    15                                  .loop:           ; next label
+    16 00000005 4883F800                    cmp rax, 0
+    17 00000009 7408                        je .done
+    18 0000000B 48FFC1                      inc rcx      ; increase counter
+    19 0000000E 48D1E8                      shr rax, 1   ; divide by 2
+    20 00000011 EBF2                        jmp .loop
+    21                                      
+    22                                  .done:
+    23 00000013 C3                          ret
+    24                                  ;***********************
+    25                                  
+    26                                  ;***********************
+    27                                  ; in: rax: start adr of string
+    28                                  ;     rbx: length of string
+    29                                  ;***********************
+    30                                  hexToLog:
+    31 00000014 50                          push rax
+    32 00000015 53                          push rbx
+    33 00000016 51                          push rcx
+    34 00000017 52                          push rdx
+    35 00000018 51                          push rcx ; push this again ; this is the lookup table reference
+    36                                      
+    37 00000019 4889C1                      mov rcx, rax    ; Pass offset of the buffer to read to
+    38 0000001C 4889DA                  	mov rdx, rbx    ; Pass number of bytes to read at one 
+    39 0000001F B803000000                  mov eax,3		; Specify sys_read call
+    40 00000024 BB00000000              	mov ebx,0		; Specify File Descriptor 0: Standard Input
+    41 00000029 CD80                    	int 80h			; Call sys_read to fill the buffer
+    42                                  	
+    43                                  	; ecx now contains the hex string
+    44                                  	; convert hex ascii to 
+    45                                  
+    46                                  	

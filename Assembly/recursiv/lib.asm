@@ -77,8 +77,6 @@ calcFib:
     
 fib:
     push rax
-    ; what has to happen:
-    ; check if ah is either 0 or 1 => returns 1
     cmp ah, 0
     je .add
     cmp ah, 1

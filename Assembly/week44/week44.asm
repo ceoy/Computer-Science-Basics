@@ -18,13 +18,14 @@ _start:
     call shiftsBoolean
 
     cmp rcx, 7
-    
+
     mov rax, text
     mov rbx, textlength
     mov rcx, lookup
     call hexToLog
-    
+
 finish:
     mov rax, 1 ; code for exit
     mov rbx, 0 ; return code    
     int 80H    ; make kernel call
+
